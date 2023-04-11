@@ -1,0 +1,45 @@
+package rent.a.car.rentacar.api.controllers;
+
+import lombok.AllArgsConstructor;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import rent.a.car.rentacar.business.abstracts.BrandService;
+import rent.a.car.rentacar.business.dto.requests.creates.CreateBrandRequest;
+import rent.a.car.rentacar.business.dto.requests.updates.UpdateBrandRequest;
+import rent.a.car.rentacar.business.dto.responses.creates.CreateBrandResponse;
+import rent.a.car.rentacar.business.dto.responses.gets.brand.GetBrandResponse;
+import rent.a.car.rentacar.business.dto.responses.updates.UpdateBrandResponse;
+import rent.a.car.rentacar.business.dto.responses.gets.brand.GetAllBrandsResponse;
+
+import java.util.List;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api/brands")
+public class BrandsController {
+    private final BrandService service;
+
+    @GetMapping
+    public List<GetAllBrandsResponse> getAll()
+    { return service.getAll(); }
+
+    @GetMapping("/{id}")
+    public GetBrandResponse getById(@PathVariable int id)
+    { return service.getById(id); }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateBrandResponse add(@RequestBody CreateBrandRequest request)
+    { return service.add(request); }
+
+    @PutMapping("/{id}")
+    public UpdateBrandResponse update(@PathVariable int id, @RequestBody UpdateBrandRequest request)
+    { return service.update(id, request); }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable int id)
+    { service.delete(id); }
+}
