@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import org.modelmapper.ModelMapper;
+import rent.a.car.rentacar.business.rules.MaintenanceBusinessRules;
 import rent.a.car.rentacar.entities.Maintenance;
 import rent.a.car.rentacar.entities.enums.State;
 import rent.a.car.rentacar.business.abstracts.CarService;
@@ -25,6 +26,7 @@ public class MaintenanceManager implements MaintenanceService {
     private final ModelMapper mapper;
     private final CarService carService;
     private final MaintenanceRepository repository;
+    private final MaintenanceBusinessRules rules;
 
     @Override
     public List<GetAllMaintenancesResponse> getAll() {
@@ -47,7 +49,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public GetMaintenanceResponse returnCarFromMaintenance(int carId) {
-        checkIfCarIsNotUnderMaintenance(carId);
+        rules.checkIfCarIsNotUnderMaintenance(carId);
         Maintenance maintenance = repository.findMaintenanceByCarIdAndIsCompletedFalse(carId);
         maintenance.setCompleted(true);
         maintenance.setEndDate(LocalDateTime.now());
@@ -61,8 +63,8 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public CreateMaintenanceResponse add(CreateMaintenanceRequest request) {
-        checkCarAvailabilityForMaintenance(request.getCarId());
-        checkIfCarUnderMaintenance(request.getCarId());
+        rules.checkCarAvailabilityForMaintenance(carService.getById(request.getCarId()).getState());
+        rules.checkIfCarUnderMaintenance(request.getCarId());
         Maintenance maintenance = mapper.map(request, Maintenance.class);
         maintenance.setId(0);
         maintenance.setCompleted(false);
@@ -92,20 +94,4 @@ public class MaintenanceManager implements MaintenanceService {
         int carId= repository.findById(id).get().getCar().getId();
         carService.changeState(carId, State.AVAILABLE);
         repository.deleteById(id); }
-
-    // Business Rules
-    private void checkIfCarUnderMaintenance(int carId) {
-        if (repository.existsByCarIdAndIsCompletedFalse(carId))
-            throw new RuntimeException("Car is currently under maintenance!");
-    }
-
-    private void checkIfCarIsNotUnderMaintenance(int carId) {
-        if (!repository.existsByCarIdAndIsCompletedFalse(carId))
-            throw new RuntimeException("No such car found in maintenance!");
-    }
-
-    private void checkCarAvailabilityForMaintenance(int carId) {
-        if (carService.getById(carId).getState().equals(State.RENTED))
-            throw new RuntimeException("The car cannot be maintenance because it is on rent!");
-    }
 }

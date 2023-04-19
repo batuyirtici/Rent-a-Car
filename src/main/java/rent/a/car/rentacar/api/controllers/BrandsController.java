@@ -1,5 +1,6 @@
 package rent.a.car.rentacar.api.controllers;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpStatus;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import org.modelmapper.ModelMapper;
+import rent.a.car.rentacar.business.rules.CarBusinessRules;
 import rent.a.car.rentacar.entities.Car;
 import rent.a.car.rentacar.entities.enums.State;
 import rent.a.car.rentacar.repository.CarRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 public class CarManager implements CarService {
     private final ModelMapper mapper;
     private final CarRepository repository;
+    private final CarBusinessRules rules;
 
     @Override
     public List<GetAllCarsResponse> getAll(boolean includeMaintenance) {
@@ -36,7 +38,7 @@ public class CarManager implements CarService {
 
     @Override
     public GetCarResponse getById(int id) {
-        checkIfCarExists(id);
+        rules.checkIfCarExists(id);
         Car car = repository.findById(id).orElseThrow();
         GetCarResponse response = mapper.map(car, GetCarResponse.class);
 
@@ -56,7 +58,7 @@ public class CarManager implements CarService {
 
     @Override
     public UpdateCarResponse update(int id, UpdateCarRequest request) {
-        checkIfCarExists(id);
+        rules.checkIfCarExists(id);
         Car car = mapper.map(request, Car.class);
         car.setId(id);
         repository.save(car);
@@ -67,7 +69,7 @@ public class CarManager implements CarService {
 
     @Override
     public void delete(int id) {
-        checkIfCarExists(id);
+        rules.checkIfCarExists(id);
         repository.deleteById(id);
     }
 
@@ -78,10 +80,7 @@ public class CarManager implements CarService {
         repository.save(car);
     }
 
-    // Business Rules
-    private void checkIfCarExists(int id) {
-        if (!repository.existsById(id)) throw new RuntimeException("A vehicle with this ID does not exist!");
-    }
+
 
     private List<Car> filterCarsByMaintenanceState(boolean includeMaintenance) {
         if (includeMaintenance) { return repository.findAll(); }
