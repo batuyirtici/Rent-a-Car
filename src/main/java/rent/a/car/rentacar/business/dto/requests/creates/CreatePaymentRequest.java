@@ -13,7 +13,6 @@ import rent.a.car.rentacar.business.dto.requests.PaymentRequest;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatePaymentRequest extends PaymentRequest {
-    @NotNull
     @Min(value = 1)
     private double balance;
 }
