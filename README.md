@@ -2,19 +2,23 @@
 
 Basic Rent a Car Site Back-End
 
-- Brand, Car, Maintenance and Model, Rental are kept in the system.
+- Brand, Car, Invoice, Maintenance, Model, Payment and Rental are kept in the system.
 
 - The Brand has characteristics in the form of id and name.
 
 - The Car has features such as id, model year, plate and price.
 
+- The Invoice has features such as id, model year, plate, model name, brand name, card holder, daily price, rented for days and rented at.
+
 - Maintenance has properties such as id, information, completion status, entry date and exit date.
 
 - The Model has characteristics in the form of id and name.
 
+- The Payment has features such as id, card cvv, balance, card number, card holder, card expiration year and card expiration month.
+
 - Rental has properties such as id, carId, daily price, rented fo days, start date and total price.
 
-- Adding, deleting, updating, listing all Brands, Cars, Maintenances, Models and listing by id value are available.
+- Adding, deleting, updating, listing all Entities and listing by id value are available.
 
 - Cars can be sent for maintenance.
 
